@@ -3,58 +3,19 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use \App\Http\Controllers\HomeController;
-use \App\Http\Controllers\ArticlesController;
+use \App\Http\Controllers\ArticleController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+Route::resource('articles', ArticleController::class)->only(['index', 'show', 'create', 'store']);
+
+
+Route::get('/about', \App\Http\Controllers\AboutController::class);
+//Route::get('/articles', [ArticlesController::class, 'index']);
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
 
-Route::get('/about', \App\Http\Controllers\AboutController::class);
 
-Route::get('/', function () {
-    return view('home.index');
-})->name('home.index');
-
-Route::get('/contact', function () {
-    return view('home.contact');
-})->name('home.contact');
-
-$articles = [
-    1 => [
-        'title' => 'First article',
-        'content' => 'First article text 123123',
-        'is_new' => true,
-        'has_comments' => true,
-        'authors' => [
-            1 => [
-                'name' => 'John',
-                'surname' => 'Doe'
-            ],
-        ],
-    ],
-    2 => [
-        'title' => 'Second article',
-        'content' => 'Second article text 123123',
-        'is_new' => false
-    ],
-];
-
-Route::view('/', 'home.index')->name('home.index');
-Route::view('/contact', 'home.contact')->name('home.contact');
-
-
-//Route::get('/articles', [ArticlesController::class, 'index']);
-//Route::resource('articles', ArticlesController::class)->only(['index', 'show']);
+Route::get('/test', [ArticleController::class, 'store']);
 
 //Route::get('/articles/{id}', function ($articleId) {
 //    $articles = [
@@ -126,7 +87,7 @@ Route::view('/contact', 'home.contact')->name('home.contact');
 //    })->name('download');
 //});
 
-
-Route::post('/articles/list', function (Request $request) {
-    dd($request->query());
-});
+//
+//Route::post('/articles/list', function (Request $request) {
+//    dd($request->query());
+//});
