@@ -9,7 +9,13 @@
 </head>
 <body>
 <div>
-    @yield('content')
+    <main class="py-3">
+        <div class="container">
+            <div class="row">
+                @yield('content')
+            </div>
+        </div>
+    </main>
 </div>
 </body>
 </html>
