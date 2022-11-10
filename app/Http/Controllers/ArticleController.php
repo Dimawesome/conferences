@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreArticleRequest;
 use Illuminate\Http\Response;
+use Illuminate\Session\Store;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
@@ -60,40 +61,52 @@ class ArticleController extends Controller
      */
     public function show(int $id): View
     {
-        return view('articles.show', ['article' => Article::findOrFail($id)]);
+        return view('articles.show', ['article' => (new Article)->findOrFail($id)]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return Response
+     * @return View
      */
-    public function edit($id)
+    public function edit(int $id): View
     {
-        //
+        return view('articles.edit', ['article' => (new Article())->findOrFail($id)]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param StoreArticleRequest $request
      * @param int $id
-     * @return Response
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(StoreArticleRequest $request, int $id): RedirectResponse
     {
-        //
+        $article = (new Article())->findOrFail($id);
+        $validated = $request->validated();
+        $article->fill($validated);
+        $article->save();
+
+        $request->session()->flash('status', 'Article was updated!');
+
+        return redirect()->route('articles.show', ['article' => $article->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return Response
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
-        //
+        $article = (new Article())->findOrFail($id);
+        $article->delete();
+
+        session()->flash('status', 'Article was deleted!');
+
+        return redirect()->route('articles.index');
     }
 }
