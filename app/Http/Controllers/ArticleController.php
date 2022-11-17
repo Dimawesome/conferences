@@ -10,8 +10,21 @@ use Illuminate\Http\Response;
 use Illuminate\Session\Store;
 use Illuminate\View\View;
 
+/**
+ * Class ArticleController
+ *
+ * @package App\Http\Controllers
+ */
 class ArticleController extends Controller
 {
+    /**
+     * ArticleController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
     /**
      *
      * Display a listing of the resource.
