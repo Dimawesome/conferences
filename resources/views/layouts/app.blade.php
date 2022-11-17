@@ -9,6 +9,17 @@
 </head>
 <body>
 <div>
+    <header style="margin: 10px">
+        @guest
+            <a href="{{ route('login') }}">Login</a>
+        @else
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout ({{ auth()->user()->name }})</a>
+            <form action="{{ route('logout') }}" method="post" id="logout-form" style="display: none">
+                @csrf
+            </form>
+        @endguest
+    </header>
     <main class="py-3">
         <div class="container">
             <div class="row">
