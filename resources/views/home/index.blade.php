@@ -3,5 +3,6 @@
 @section('title', 'Home')
 
 @section('content')
-    <h5>Home page.</h5>
+    <h5>{{ __('app.home_module.index_title') }}</h5>
+    <p>{{ __('app.home_module.welcome', ['name' => 'John']) }}</p>
 @endsection
