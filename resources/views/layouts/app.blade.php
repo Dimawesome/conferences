@@ -8,8 +8,6 @@
     <title>Laravel project - @yield('title')</title>
 </head>
 <body>
-<div>
-    @yield('content')
-</div>
+@yield('content')
 </body>
 </html>

@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Home')
+@section('title', 'Home Page')
 
 @section('content')
-    <h1>Home page</h1>
+    Extended layout/app.blade.php
+    <h4>Welcome to the Home Page</h4>
 @endsection

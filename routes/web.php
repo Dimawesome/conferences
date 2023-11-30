@@ -16,117 +16,94 @@ use \App\Http\Controllers\ArticlesController;
 |
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home.index');
-Route::get('/contact', [HomeController::class, 'contact'])->name('home.contact');
-
-Route::get('/about', \App\Http\Controllers\AboutController::class);
-
-Route::get('/', function () {
-    return view('home.index');
-})->name('home.index');
-
-Route::get('/contact', function () {
-    return view('home.contact');
-})->name('home.contact');
-
-$articles = [
+$posts = [
     1 => [
         'title' => 'First article',
-        'content' => 'First article text 123123',
+        'content' => 'First article content',
         'is_new' => true,
-        'has_comments' => true,
         'authors' => [
             1 => [
-                'name' => 'John',
-                'surname' => 'Doe'
+                'name' => 'Authorname_1',
+                'surname' => 'Authorsurname_1',
             ],
-        ],
+            2 => [
+                'name' => 'Authorname_2',
+                'surname' => 'Authorsurname_2',
+            ],
+        ]
     ],
     2 => [
         'title' => 'Second article',
-        'content' => 'Second article text 123123',
-        'is_new' => false
+        'content' => 'Second article content',
+        'is_new' => false,
+        'authors' => [
+            1 => [
+                'name' => 'Authorname_3',
+                'surname' => 'Authorsurname_3',
+            ],
+        ]
     ],
 ];
 
-Route::view('/', 'home.index')->name('home.index');
-Route::view('/contact', 'home.contact')->name('home.contact');
+Route::prefix('posts')->name('posts.')->group(function () use ($posts) {
+    Route::get('/', function () use ($posts) {
+        return view('posts.index', ['posts' => $posts]);
+    })->name('index');
 
+    Route::get('newest/{isNew?}', function (bool $isNew = false) use ($posts) {
+        $data = [];
 
-//Route::get('/articles', [ArticlesController::class, 'index']);
-//Route::resource('articles', ArticlesController::class)->only(['index', 'show']);
+        if ($isNew) {
+            foreach ($posts as $key => $post) {
+                if ($post['is_new']) {
+                    $data[$key] = $post;
+                }
+            }
+        } else {
+            $data = $posts;
+        }
 
-//Route::get('/articles/{id}', function ($articleId) {
-//    $articles = [
-//        1 => [
-//            'title' => 'First article',
-//            'content' => 'First article text 123123',
-//            'is_new' => true,
-//            'has_comments' => true,
-//            'authors' => [
-//                1 => [
-//                    'name' => 'John',
-//                    'surname' => 'Doe'
-//                ],
-//                2 => [
-//                    'name' => 'Vardenis',
-//                    'surname' => 'Pavardenis'
-//                ],
-//                3 => [
-//                    'name' => 'Petras',
-//                    'surname' => 'Petraitis'
-//                ]
-//            ],
-//        ],
-//        2 => [
-//            'title' => 'Second article',
-//            'content' => 'Second article text 123123',
-//            'is_new' => false
-//        ],
-//    ];
-//
-//    abort_if(!isset($articles[$articleId]), 404);
-//
-//    return view('articles.show', ['article' => $articles[$articleId]]);
-//})->name('articles.show');
-//
-//Route::get('/articles/recent/{days?}', function ($days = 25) {
-//    return "Articles from $days days ago";
-//})->name('articles.recent');
+        return view('posts.index', ['posts' => $data]);
+    })->name('newest');
 
-//Route::prefix('/lecture')->name('lecture.')->group(function() use ($articles) {
-//    Route::get('response', static function () use ($articles) {
-//        return response($articles, 201)
-//            ->header('Content-Type', 'application/json')
-//            ->cookie('USER_COOKIE', 'Jhon Doe', 3600);
-//    })->name('response');
-//
-//    Route::get('redirect', function () {
-//        return redirect('/contact');
-//    })->name('redirect');
-//
-//    Route::get('back', function () {
-//        return back();
-//    })->name('back');
-//
-//    Route::get('named-route', function () {
-//        return redirect()->route('articles.show', ['id' => 2]);
-//    })->name('named-route');
-//
-//    Route::get('away', function () {
-//        return redirect()->away('https://google.com');
-//    })->name('away');
-//
-//    Route::get('json', function () use ($articles) {
-//        return response()->json($articles);
-//    })->name('json');
-//
-//    Route::get('download', function () use ($articles) {
-//        return response()->download(public_path('test.jpg'));
-//    })->name('download');
-//});
+    Route::get('{id}', function (int $id) use ($posts) {
+        abort_if(!isset($posts[$id]), 404);
 
+        return view('posts.show', ['post' => $posts[$id]]);
+    })->name('show');
 
-Route::post('/articles/list', function (Request $request) {
-    dd($request->query());
+    Route::get('author/{postId}/{authorId}', function (int $postId, int $authorId) use ($posts) {
+        abort_if(!isset($posts[$postId]['authors'][$authorId]), 404);
+
+        return view('posts.author', [
+            'postTitle' => $posts[$postId]['title'],
+            'author' => $posts[$postId]['authors'][$authorId]
+        ]);
+    })->name('author');
+});
+
+Route::view('/', 'home.index');
+Route::view('/contact', 'home.contact');
+
+Route::prefix('articles')->name('articles.')->group(function () {
+    Route::get('recent/{days?}', function ($days = 25) {
+        return "Article from $days days ago";
+    })->name('recent');
+
+    Route::get('{id}', function ($id) {
+        $articles = [
+            1 => [
+                'title' => 'Title 1',
+                'content' => 'Content 1'
+            ],
+            2 => [
+                'title' => 'Title 2',
+                'content' => 'Content 2'
+            ]
+        ];
+
+        abort_if(!isset($articles[$id]), 500);
+
+        return view('articles.show', ['article' => $articles[$id]]);
+    })->name('show');
 });
